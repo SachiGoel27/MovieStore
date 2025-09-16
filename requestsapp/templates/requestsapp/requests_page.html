@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Movie Requests</h2>
+
+    <!-- New Request Form -->
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Request</button>
+    </form>
+
+    <!-- User’s Requests -->
+    <h3>Your Requests</h3>
+    {% if user_requests %}
+        <ul class="list-group">
+            {% for req in user_requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ req.name }}</strong><br>
+                        {{ req.description }}<br>
+                        <small class="text-muted">Requested on {{ req.created_at }}</small>
+                    </div>
+                    <a href="{% url 'requestsapp:delete_request' req.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not made any requests yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
