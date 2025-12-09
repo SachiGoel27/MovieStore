@@ -5,6 +5,9 @@ from .forms import CustomUserCreationForm, CustomErrorList
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
+from .models import UserProfile
+from .forms import UserProfileForm
 # Create your views here.
 def login(request):
     template_data = {}
@@ -50,3 +53,22 @@ def orders(request):
     template_data['orders'] = request.user.order_set.all()
     return render(request, 'accounts/orders.html',
         {'template_data': template_data})
+
+@login_required
+def settings(request):
+    template_data = {}
+    template_data['title'] = 'Settings'
+    
+    # Get or create the profile to ensure one exists
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts.settings')
+    else:
+        form = UserProfileForm(instance=profile)
+
+    template_data['form'] = form
+    return render(request, 'accounts/settings.html', {'template_data': template_data})

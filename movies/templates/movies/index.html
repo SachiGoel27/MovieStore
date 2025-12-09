@@ -24,6 +24,10 @@
               <div class="col-auto">
                 <select class="form-select" name="sort">
                   <option value="">Sort By</option>
+                  <option value="alpha"
+                    {% if request.GET.sort == 'alpha' %}selected{% endif %}>
+                    Alphabetical (A → Z)
+                  </option>
                   <option value="reverse_alpha" {% if request.GET.sort == 'reverse_alpha' %}selected{% endif %}>
                       Reverse Alphabetical
                   </option>
@@ -59,19 +63,36 @@
     </div>
 
     <!-- MOVIE CARDS -->
-    <div class="row">
+      <div class="row">
+      {% with user_max=user.userprofile.max_content_rating|default_if_none:3 %}
       {% for movie in template_data.movies %}
       <div class="col-md-4 col-lg-3 mb-2">
         <div class="p-2 card align-items-center pt-4">
-          <img src="{{ movie.image.url }}" class="card-img-top rounded img-card-200">
-          <div class="card-body text-center">
-            <a href="{% url 'movies.show' id=movie.id %}" class="btn bg-dark text-white">
-              {{ movie.name }}
-            </a>
-          </div>
+          
+          {% if user.is_authenticated and movie.content_rating > user_max %}
+            <div style="filter: blur(5px); pointer-events: none; opacity: 0.6;">
+                <img src="{{ movie.image.url }}" class="card-img-top rounded img-card-200">
+            </div>
+            <div class="card-body text-center">
+                <button class="btn btn-secondary" disabled>
+                  Content Restricted ({{ movie.get_content_rating_display }})
+                </button>
+            </div>
+
+          {% else %}
+            <img src="{{ movie.image.url }}" class="card-img-top rounded img-card-200">
+            <div class="card-body text-center">
+              <a href="{% url 'movies.show' id=movie.id %}" class="btn bg-dark text-white">
+                {{ movie.name }}
+              </a>
+              <div class="mt-2 text-muted small">Rated: {{ movie.get_content_rating_display }}</div>
+            </div>
+          {% endif %}
+          
         </div>
       </div>
       {% endfor %}
+      {% endwith %}
     </div>
 
   </div>

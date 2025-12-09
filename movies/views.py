@@ -19,6 +19,8 @@ def index(request):
     if btn_action == "filter":
         if sort_term == 'reverse_alpha':
             movies = movies.order_by('-name')
+        elif sort_term == 'alpha':
+            movies = movies.order_by('name')
         elif sort_term == 'length':
             movies = movies.annotate(name_length=Length('name')).order_by('name_length')
         elif sort_term == 'length_desc':

@@ -7,6 +7,13 @@ class Movie(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     image = models.ImageField(upload_to='movie_images/')
+    RATING_CHOICES = (
+        (0, 'G'),
+        (1, 'PG'),
+        (2, 'PG-13'),
+        (3, 'R'),
+    )
+    content_rating = models.IntegerField(choices=RATING_CHOICES, default=0)
     def __str__(self):
         return str(self.id) + ' - ' + self.name
 

@@ -1,6 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
+from .models import UserProfile
+from django import forms # ensure django.forms is imported if not already used heavily
+
 class CustomErrorList(ErrorList):
     def __str__(self):
         if not self:
@@ -17,3 +20,14 @@ class CustomUserCreationForm(UserCreationForm):
             self.fields[fieldname].widget.attrs.update(
                 {'class': 'form-control'}
             )
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['max_content_rating']
+        labels = {
+            'max_content_rating': 'Max Content Rating Allowed',
+        }
+        widgets = {
+            'max_content_rating': forms.Select(attrs={'class': 'form-select'}),
+        }
